@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phòng Khám Đa Khoa An Bình - Hệ Thống Đặt Lịch</title>
+  <!-- Thư viện giao diện Tailwind CSS & Icon -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Thư viện kết nối Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800">
+
+  <!-- THANH CHUYỂN ĐỔI CHẾ ĐỘ XEM (DÀNH CHO BẠN KIỂM TRA CẢ APP VÀ WEB) -->
+  <div class="bg-slate-900 text-white px-4 py-2.5 flex flex-wrap justify-between items-center text-sm sticky top-0 z-50 shadow-md">
+    <div class="flex items-center gap-2">
+      <span class="bg-emerald-500 text-xs font-bold px-2 py-0.5 rounded">LIVE DATABASE</span>
+      <span class="font-medium">Hệ thống Phòng Khám Đa Khoa An Bình</span>
+    </div>
+    <div class="flex gap-2 mt-1 sm:mt-0">
+      <button onclick="switchMode('mobile')" id="btnModeMobile" class="px-3 py-1.5 rounded-lg font-semibold bg-sky-500 text-white transition">
+        <i class="fa-solid fa-mobile-screen-button mr-1"></i> Giao diện App Bệnh Nhân
+      </button>
+      <button onclick="switchMode('web')" id="btnModeWeb" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-700 text-slate-300 hover:bg-slate-600 transition">
+        <i class="fa-solid fa-desktop mr-1"></i> Website Quản Lý Phòng Khám
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PHẦN 1: GIAO DIỆN APP BỆNH NHÂN (ANDROID / IOS)           -->
+  <!-- ========================================================= -->
+  <div id="mobileView" class="py-6 px-2 flex justify-center">
+    <div class="w-full max-w-[410px] bg-white rounded-[36px] shadow-2xl border-[8px] border-slate-800 overflow-hidden flex flex-col min-h-[780px] relative">
+      
+      <!-- Header App Bệnh Nhân -->
+      <div class="bg-sky-600 text-white pt-6 pb-4 px-5 flex justify-between items-center shadow">
+        <div>
+          <p class="text-xs text-sky-100">Phòng Khám Đa Khoa An Bình</p>
+          <h1 class="text-lg font-bold" id="mobileHeaderTitle">Đặt Lịch Khám Mới</h1>
+        </div>
+        <!-- Nút Quả Chuông Nhắc Lịch -->
+        <button onclick="showMobileTab('notifications')" class="relative p-2 bg-sky-700 rounded-full hover:bg-sky-800">
+          <i class="fa-solid fa-bell text-lg"></i>
+          <span id="notifBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+        </button>
+      </div>
+
+      <!-- Banner Nhắc Nhở Lịch Khám Sắp Tới -->
+      <div id="upcomingBanner" class="hidden bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-start gap-2.5 text-xs text-amber-900">
+        <i class="fa-solid fa-clock text-amber-600 text-base mt-0.5"></i>
+        <div id="upcomingBannerText" class="flex-1"></div>
+      </div>
+
+      <!-- Nội dung cuộn của App -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-5 pb-24" id="mobileTabBooking">
+        
+        <!-- MỤC 1: CHỌN BÁC SĨ -->
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2">
+            <span class="bg-sky-600 text-white w-5 h-5 inline-flex items-center justify-center rounded-full text-xs mr-1">1</span>
+            Chọn Bác Sĩ
+          </label>
+          <div id="doctorListMobile" class="grid grid-cols-2 gap-2.5">
+            <!-- Dữ liệu bác sĩ tự động tải từ Supabase -->
+          </div>
+        </div>
+
+        <!-- MỤC 2: CHỌN DỊCH VỤ -->
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2">
+            <span class="bg-sky-600 text-white w-5 h-5 inline-flex items-center justify-center rounded-full text-xs mr-1">2</span>
+            Chọn Dịch Vụ Khám
+          </label>
+          <div id="serviceListMobile" class="space-y-2">
+            <!-- Dữ liệu dịch vụ tự động tải từ Supabase -->
+          </div>
+        </div>
+
+        <!-- MỤC 3: CHỌN NGÀY & KHUNG GIỜ (GIỚI HẠN 5 NGƯỜI/30 PHÚT) -->
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2">
+            <span class="bg-sky-600 text-white w-5 h-5 inline-flex items-center justify-center rounded-full text-xs mr-1">3</span>
+            Chọn Ngày & Giờ Khám <span class="text-xs font-normal text-slate-500">(Tối đa 5 người/ca)</span>
+          </label>
+          <input type="date" id="bookingDate" onchange="loadSlotCounts()" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm font-medium mb-3 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+          
+          <div id="timeSlotsContainer" class="grid grid-cols-3 gap-2">
+            <!-- Các nút khung giờ 30 phút kèm bộ đếm (x/5) -->
+          </div>
+        </div>
+
+        <!-- MỤC 4: THÔNG TIN BỆNH NHÂN & LÝ DO KHÁM -->
+        <div class="space-y-2.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <label class="block text-sm font-bold text-slate-700">
+            <span class="bg-sky-600 text-white w-5 h-5 inline-flex items-center justify-center rounded-full text-xs mr-1">4</span>
+            Thông Tin Bệnh Nhân
+          </label>
+          <input type="text" id="patientName" placeholder="Họ và tên bệnh nhân *" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white" />
+          <input type="tel" id="patientPhone" placeholder="Số điện thoại nhận nhắc lịch *" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white" />
+          <textarea id="patientSymptoms" rows="2" placeholder="Lý do khám / Triệu chứng (VD: Ho sốt, đau dạ dày...)" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white"></textarea>
+        </div>
+
+        <!-- NÚT XÁC NHẬN ĐẶT LỊCH -->
+        <button onclick="submitBooking()" id="btnSubmitBooking" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-600/30 transition text-base">
+          Xác Nhận Đặt Lịch
+        </button>
+      </div>
+
+      <!-- TAB: LỊCH HẸN & KẾT QUẢ CỦA TÔI -->
+      <div class="hidden flex-1 overflow-y-auto p-4 space-y-4 pb-24" id="mobileTabHistory">
+        <div class="bg-sky-50 p-3 rounded-xl border border-sky-100">
+          <label class="text-xs font-semibold text-sky-900 block mb-1">Nhập số điện thoại để tra cứu lịch & nhắc nhở:</label>
+          <div class="flex gap-2">
+            <input type="tel" id="lookupPhone" placeholder="Nhập SĐT của bạn..." class="flex-1 border border-slate-300 rounded-lg px-3 py-1.5 text-sm" />
+            <button onclick="loadPatientHistory()" class="bg-sky-600 text-white px-4 py-1.5 rounded-lg text-sm font-semibold">Tìm</button>
+          </div>
+        </div>
+        <div id="patientHistoryList" class="space-y-3"></div>
+      </div>
+
+      <!-- TAB: THÔNG BÁO & NHẮC LỊCH -->
+      <div class="hidden flex-1 overflow-y-auto p-4 space-y-3 pb-24" id="mobileTabNotifications">
+        <div class="flex justify-between items-center">
+          <h3 class="font-bold text-sm text-slate-700">Thông báo & Nhắc giờ khám</h3>
+          <span class="text-xs text-sky-600">Tự động nhắc trước 1 giờ</span>
+        </div>
+        <div id="notificationListMobile" class="space-y-2.5"></div>
+      </div>
+
+      <!-- Thanh Điều Hướng Đáy Màn Hình (4 Đầu Mục) -->
+      <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2 px-4 flex justify-around text-xs font-medium text-slate-500">
+        <button onclick="showMobileTab('booking')" id="navBooking" class="flex flex-col items-center text-sky-600 font-bold">
+          <i class="fa-solid fa-calendar-plus text-lg mb-0.5"></i>
+          <span>Đặt Lịch</span>
+        </button>
+        <button onclick="showMobileTab('history')" id="navHistory" class="flex flex-col items-center hover:text-sky-600">
+          <i class="fa-solid fa-file-medical text-lg mb-0.5"></i>
+          <span>Lịch & Kết Quả</span>
+        </button>
+        <button onclick="showMobileTab('notifications')" id="navNotif" class="flex flex-col items-center hover:text-sky-600">
+          <i class="fa-solid fa-bell text-lg mb-0.5"></i>
+          <span>Nhắc Lịch</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PHẦN 2: WEBSITE QUẢN LÝ PHÒNG KHÁM (DÀNH CHO LỄ TÂN/BÁC SĨ)-->
+  <!-- ========================================================= -->
+  <div id="webView" class="hidden min-h-screen flex flex-col">
+    
+    <!-- Thanh Header Trên Cùng -->
+    <header class="bg-sky-600 text-white px-6 py-3.5 flex justify-between items-center shadow">
+      <div class="flex items-center gap-3">
+        <div class="bg-white text-sky-600 w-9 h-9 rounded-lg flex items-center justify-center font-extrabold text-xl">+</div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight">Phòng Khám Đa Khoa An Bình</h1>
+          <p class="text-xs text-sky-100">Hệ thống Quản lý Lịch hẹn & Điều phối Khám bệnh</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button onclick="refreshAllData()" class="bg-sky-700 hover:bg-sky-800 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-rotate"></i> Làm mới dữ liệu
+        </button>
+        <div class="flex items-center gap-2 text-sm font-medium">
+          <i class="fa-solid fa-user-doctor bg-sky-700 p-2 rounded-full"></i>
+          <span>Quản Trị / Lễ Tân</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 flex flex-col lg:flex-row gap-6 p-6 max-w-[1400px] w-full mx-auto">
+      
+      <!-- Cột Trái: Menu Điều Hướng -->
+      <aside class="w-full lg:w-56 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-1.5 h-fit">
+        <div class="px-3 py-2.5 rounded-xl bg-sky-50 text-sky-700 font-bold text-sm flex items-center gap-2.5">
+          <i class="fa-solid fa-calendar-check"></i> Lịch Hẹn Hôm Nay
+        </div>
+        <div class="px-3 py-2 text-xs text-slate-500 border-t pt-3 mt-3 space-y-2">
+          <p class="font-bold text-slate-700">Quy tắc hệ thống:</p>
+          <p>• Mỗi ca khám: <b>30 phút</b></p>
+          <p>• Tối đa: <b>5 bệnh nhân / khung giờ</b></p>
+          <p>• Tự động gửi nhắc lịch khi duyệt</p>
+        </div>
+      </aside>
+
+      <!-- Khu Vực Trung Tâm: Danh Sách Lịch Hẹn -->
+      <main class="flex-1 bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+        <div class="flex flex-wrap justify-between items-center gap-3 pb-4 border-b border-slate-200">
+          <div>
+            <h2 class="text-lg font-bold text-slate-800">Danh Sách Lịch Hẹn Khám Bệnh</h2>
+            <p class="text-xs text-slate-500">Dữ liệu đồng bộ thời gian thực từ App Bệnh Nhân</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="date" id="adminFilterDate" onchange="loadAdminAppointments()" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm font-medium" />
+            <input type="text" id="adminSearchInput" oninput="renderAdminTable()" placeholder="Tìm tên hoặc SĐT bệnh nhân..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm w-56" />
+            <button onclick="switchMode('mobile')" class="bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-semibold">
+              + Đặt Lịch Mới
+            </button>
+          </div>
+        </div>
+
+        <!-- Bảng Dữ Liệu 6 Cột -->
+        <div class="overflow-x-auto mt-4">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                <th class="py-3 px-3 font-semibold">Giờ Khám</th>
+                <th class="py-3 px-3 font-semibold">Bệnh Nhân</th>
+                <th class="py-3 px-3 font-semibold">Số Điện Thoại</th>
+                <th class="py-3 px-3 font-semibold">Bác Sĩ & Dịch Vụ</th>
+                <th class="py-3 px-3 font-semibold">Lý Do Khám</th>
+                <th class="py-3 px-3 font-semibold">Trạng Thái</th>
+                <th class="py-3 px-3 font-semibold text-right">Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody id="adminAppointmentTable" class="divide-y divide-slate-200">
+              <!-- Danh sách lịch hẹn tự động hiển thị tại đây -->
+            </tbody>
+          </table>
+        </div>
+      </main>
+
+      <!-- Cột Phải: Bác Sĩ Đang Trực & Thống Kê Ca -->
+      <aside class="w-full lg:w-72 space-y-4">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+          <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-user-md text-sky-600"></i> Bác Sĩ Đang Trực
+          </h3>
+          <div id="adminDoctorList" class="space-y-3"></div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MÃ XỬ LÝ KẾT NỐI CƠ SỞ DỮ LIỆU SUPABASE CỦA BẠN           -->
+  <!-- ========================================================= -->
+  <script>
+    const SUPABASE_URL = 'https://qrwlomyhgkflpolucpuu.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyd2xvbXloZ2tmbHBvbHVjcHV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NTY2MTIsImV4cCI6MjEwNjMzMjYxMn0.NTrEqWgvPvARpYlZSEWWOkIYgYsoHHHoRcnE-n7kKWY';
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const TIME_SLOTS = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
+    const MAX_PER_SLOT = 5;
+
+    let doctors = [];
+    let services = [];
+    let selectedDoctorId = null;
+    let selectedServiceId = null;
+    let selectedTimeSlot = null;
+    let allAppointments = [];
+
+    // Khởi tạo ngày hôm nay mặc định
+    const todayStr = new Date().toISOString().split('T')[0];
+    document.getElementById('bookingDate').value = todayStr;
+    document.getElementById('adminFilterDate').value = todayStr;
+
+    // Khởi chạy khi mở trang
+    async function initApp() {
+      await loadDoctorsAndServices();
+      await loadSlotCounts();
+      await loadAdminAppointments();
+      await loadNotifications();
+    }
+
+    // 1. Tải danh sách Bác sĩ và Dịch vụ từ Supabase
+    async function loadDoctorsAndServices() {
+      const { data: docData } = await supabaseClient.from('users').select('*').eq('role', 'doctor');
+      const { data: srvData } = await supabaseClient.from('services').select('*').order('id');
+
+      doctors = docData || [];
+      services = srvData || [];
+
+      if (doctors.length > 0 && !selectedDoctorId) selectedDoctorId = doctors[0].id;
+      if (services.length > 0 && !selectedServiceId) selectedServiceId = services[0].id;
+
+      renderDoctorsMobile();
+      renderServicesMobile();
+      renderAdminDoctors();
+    }
+
+    function renderDoctorsMobile() {
+      const container = document.getElementById('doctorListMobile');
+      container.innerHTML = doctors.map(doc => {
+        const active = doc.id === selectedDoctorId;
+        return `
+          <div onclick="selectDoctor('${doc.id}')" class="cursor-pointer p-3 rounded-2xl border transition flex flex-col items-center text-center ${active ? 'bg-sky-50 border-sky-500 ring-2 ring-sky-500/20' : 'bg-white border-slate-200 hover:border-sky-300'}">
+            <div class="w-12 h-12 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-lg mb-1.5">
+              <i class="fa-solid fa-user-doctor"></i>
+            </div>
+            <p class="font-bold text-xs text-slate-800">${doc.full_name}</p>
+            <p class="text-[11px] text-slate-500 line-clamp-2 mt-0.5">${doc.specialty || 'Bác sĩ chuyên khoa'}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderServicesMobile() {
+      const container = document.getElementById('serviceListMobile');
+      container.innerHTML = services.map(srv => {
+        const active = srv.id === selectedServiceId;
+        return `
+          <div onclick="selectService(${srv.id})" class="cursor-pointer px-3.5 py-2.5 rounded-xl border transition flex justify-between items-center ${active ? 'bg-sky-50 border-sky-500 font-bold text-sky-900' : 'bg-white border-slate-200 text-slate-700'}">
+            <span class="text-sm">${srv.name}</span>
+            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">${Number(srv.price).toLocaleString('vi-VN')} đ</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectDoctor(id) {
+      selectedDoctorId = id;
+      renderDoctorsMobile();
+      loadSlotCounts();
+    }
+
+    function selectService(id) {
+      selectedServiceId = id;
+      renderServicesMobile();
+    }
+
+    // 2. Tính số người đã đặt trong từng khung giờ 30 phút (Giới hạn 5 người)
+    async function loadSlotCounts() {
+      const date = document.getElementById('bookingDate').value;
+      if (!selectedDoctorId || !date) return;
+
+      const { data } = await supabaseClient
+        .from('appointments')
+        .select('time_slot, status')
+        .eq('doctor_id', selectedDoctorId)
+        .eq('appointment_date', date)
+        .neq('status', 'Đã Hủy');
+
+      const counts = {};
+      (data || []).forEach(row => {
+        counts[row.time_slot] = (counts[row.time_slot] || 0) + 1;
+      });
+
+      const container = document.getElementById('timeSlotsContainer');
+      container.innerHTML = TIME_SLOTS.map(slot => {
+        const current = counts[slot] || 0;
+        const isFull = current >= MAX_PER_SLOT;
+        const isSelected = selectedTimeSlot === slot && !isFull;
+
+        let btnClass = 'bg-white border-slate-300 text-slate-700 hover:border-sky-500';
+        if (isFull) {
+          btnClass = 'bg-slate-200 border-slate-200 text-slate-400 cursor-not-allowed';
+        } else if (isSelected) {
+          btnClass = 'bg-emerald-600 border-emerald-600 text-white font-bold shadow-sm';
+        }
+
+        return `
+          <button ${isFull ? 'disabled' : ''} onclick="selectTimeSlot('${slot}')" class="border rounded-xl py-2 px-1 text-center transition flex flex-col items-center ${btnClass}">
+            <span class="text-sm font-semibold">${slot}</span>
+            <span class="text-[10px] ${isSelected ? 'text-emerald-100' : isFull ? 'text-red-500 font-semibold' : 'text-slate-500'}">
+              ${isFull ? 'Đã đầy (5/5)' : `Đã đặt ${current}/${MAX_PER_SLOT}`}
+            </span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectTimeSlot(slot) {
+      selectedTimeSlot = slot;
+      loadSlotCounts();
+    }
+
+    // 3. Gửi yêu cầu Đặt lịch & Tự động tạo Nhắc lịch
+    async function submitBooking() {
+      const name = document.getElementById('patientName').value.trim();
+      const phone = document.getElementById('patientPhone').value.trim();
+      const symptoms = document.getElementById('patientSymptoms').value.trim();
+      const date = document.getElementById('bookingDate').value;
+
+      if (!selectedDoctorId || !selectedServiceId || !selectedTimeSlot) {
+        alert('Vui lòng chọn Bác sĩ, Dịch vụ và Khung giờ khám!');
+        return;
+      }
+      if (!name || !phone) {
+        alert('Vui lòng nhập Họ tên và Số điện thoại bệnh nhân!');
+        return;
+      }
+
+      const btn = document.getElementById('btnSubmitBooking');
+      btn.disabled = true;
+      btn.innerText = 'Đang xử lý đặt lịch...';
+
+      const { data: inserted, error } = await supabaseClient
+        .from('appointments')
+        .insert([{
+          patient_name: name,
+          patient_phone: phone,
+          doctor_id: selectedDoctorId,
+          service_id: selectedServiceId,
+          appointment_date: date,
+          time_slot: selectedTimeSlot,
+          symptoms: symptoms,
+          status: 'Chờ Khám'
+        }])
+        .select()
+        .single();
+
+      btn.disabled = false;
+      btn.innerText = 'Xác Nhận Đặt Lịch';
+
+      if (error) {
+        alert('Không thể đặt lịch: ' + error.message);
+        loadSlotCounts();
+        return;
+      }
+
+      // Tự động tạo thông báo nhắc lịch trước giờ khám
+      const doctorObj = doctors.find(d => d.id === selectedDoctorId);
+      const serviceObj = services.find(s => s.id === selectedServiceId);
+      const reminderMsg = `Nhắc lịch: Bạn có lịch ${serviceObj ? serviceObj.name : 'khám'} với ${doctorObj ? doctorObj.full_name : 'Bác sĩ'} vào lúc ${selectedTimeSlot} ngày ${date}. Vui lòng đến trước 10 phút!`;
+
+      await supabaseClient.from('notifications').insert([{
+        patient_phone: phone,
+        appointment_id: inserted.id,
+        title: `🔔 Nhắc lịch khám lúc ${selectedTimeSlot} (${date})`,
+        message: reminderMsg,
+        notify_time: new Date().toISOString()
+      }]);
+
+      // Hiện Banner nhắc lịch ngay trên đầu App
+      document.getElementById('upcomingBanner').classList.remove('hidden');
+      document.getElementById('upcomingBannerText').innerHTML = `<b>Đặt lịch thành công!</b> Hệ thống đã bật hẹn giờ nhắc bạn trước ca khám <b>${selectedTimeSlot} (${date})</b>.`;
+
+      document.getElementById('lookupPhone').value = phone;
+      alert('🎉 Đặt lịch khám thành công! Hệ thống đã tự động cài đặt nhắc nhở giờ khám cho bạn.');
+
+      selectedTimeSlot = null;
+      document.getElementById('patientSymptoms').value = '';
+      await refreshAllData();
+    }
+
+    // 4. Quản lý Thông báo & Nhắc lịch trên App
+    async function loadNotifications() {
+      const { data } = await supabaseClient
+        .from('notifications')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(15);
+
+      const list = data || [];
+      const badge = document.getElementById('notifBadge');
+      if (list.length > 0) {
+        badge.innerText = list.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      const container = document.getElementById('notificationListMobile');
+      if (list.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-8">Chưa có thông báo nhắc lịch nào.</p>`;
+        return;
+      }
+
+      container.innerHTML = list.map(item => `
+        <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200 space-y-1">
+          <div class="flex justify-between items-start">
+            <p class="font-bold text-xs text-amber-900">${item.title}</p>
+            <span class="text-[10px] text-slate-400">SĐT: ${item.patient_phone}</span>
+          </div>
+          <p class="text-xs text-slate-700">${item.message}</p>
+        </div>
+      `).join('');
+    }
+
+    // 5. Tra cứu lịch hẹn cá nhân theo Số điện thoại
+    async function loadPatientHistory() {
+      const phone = document.getElementById('lookupPhone').value.trim();
+      const container = document.getElementById('patientHistoryList');
+      if (!phone) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Nhập số điện thoại của bạn để xem lịch hẹn.</p>`;
+        return;
+      }
+
+      const { data } = await supabaseClient
+        .from('appointments')
+        .select('*')
+        .eq('patient_phone', phone)
+        .order('appointment_date', { ascending: false });
+
+      if (!data || data.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Không tìm thấy lịch hẹn nào với SĐT này.</p>`;
+        return;
+      }
+
+      container.innerHTML = data.map(apt => {
+        const doc = doctors.find(d => d.id === apt.doctor_id);
+        const srv = services.find(s => s.id === apt.service_id);
+        return `
+          <div class="p-3.5 rounded-xl border border-slate-200 bg-white shadow-sm space-y-1.5">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-sm text-sky-700"><i class="fa-regular fa-clock mr-1"></i>${apt.time_slot} - Ngày ${apt.appointment_date}</span>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full ${getStatusBadgeClass(apt.status)}">${apt.status}</span>
+            </div>
+            <p class="text-xs text-slate-700"><b>Bác sĩ:</b> ${doc ? doc.full_name : ''}</p>
+            <p class="text-xs text-slate-700"><b>Dịch vụ:</b> ${srv ? srv.name : ''}</p>
+            ${apt.symptoms ? `<p class="text-xs text-slate-500"><b>Triệu chứng:</b> ${apt.symptoms}</p>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 6. Giao diện Website Quản lý Phòng khám (Lễ tân / Bác sĩ)
+    async function loadAdminAppointments() {
+      const filterDate = document.getElementById('adminFilterDate').value;
+      let query = supabaseClient.from('appointments').select('*').order('time_slot', { ascending: true });
+      if (filterDate) query = query.eq('appointment_date', filterDate);
+
+      const { data } = await query;
+      allAppointments = data || [];
+      renderAdminTable();
+      renderAdminDoctors();
+    }
+
+    function getStatusBadgeClass(status) {
+      if (status === 'Chờ Khám') return 'bg-amber-100 text-amber-800';
+      if (status === 'Đang Khám') return 'bg-sky-100 text-sky-800';
+      if (status === 'Đã Xong') return 'bg-emerald-100 text-emerald-800';
+      return 'bg-red-100 text-red-700';
+    }
+
+    function renderAdminTable() {
+      const keyword = (document.getElementById('adminSearchInput').value || '').toLowerCase();
+      const tbody = document.getElementById('adminAppointmentTable');
+
+      const filtered = allAppointments.filter(a =>
+        a.patient_name.toLowerCase().includes(keyword) ||
+        a.patient_phone.toLowerCase().includes(keyword)
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-400">Chưa có lịch hẹn nào trong ngày này. Hãy thử đặt lịch bên màn hình App Bệnh Nhân!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(apt => {
+        const doc = doctors.find(d => d.id === apt.doctor_id);
+        const srv = services.find(s => s.id === apt.service_id);
+        return `
+          <tr class="hover:bg-slate-50">
+            <td class="py-3 px-3 font-bold text-slate-800">${apt.time_slot}</td>
+            <td class="py-3 px-3 font-semibold">${apt.patient_name}</td>
+            <td class="py-3 px-3 text-slate-600">${apt.patient_phone}</td>
+            <td class="py-3 px-3">
+              <p class="font-semibold text-slate-800">${doc ? doc.full_name : ''}</p>
+              <p class="text-xs text-slate-500">${srv ? srv.name : ''}</p>
+            </td>
+            <td class="py-3 px-3 text-slate-600 text-xs max-w-[180px]">${apt.symptoms || '-'}</td>
+            <td class="py-3 px-3">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold ${getStatusBadgeClass(apt.status)}">${apt.status}</span>
+            </td>
+            <td class="py-3 px-3 text-right space-x-1">
+              <button onclick="updateAppointmentStatus('${apt.id}', '${apt.patient_phone}', '${apt.time_slot}', 'Đang Khám')" class="bg-sky-500 hover:bg-sky-600 text-white text-xs px-2.5 py-1 rounded font-semibold">Gọi Khám</button>
+              <button onclick="updateAppointmentStatus('${apt.id}', '${apt.patient_phone}', '${apt.time_slot}', 'Đã Xong')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-2.5 py-1 rounded font-semibold">Đã Xong</button>
+              <button onclick="updateAppointmentStatus('${apt.id}', '${apt.patient_phone}', '${apt.time_slot}', 'Đã Hủy')" class="bg-red-500 hover:bg-red-600 text-white text-xs px-2.5 py-1 rounded font-semibold">Hủy</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function updateAppointmentStatus(id, phone, slot, newStatus) {
+      await supabaseClient.from('appointments').update({ status: newStatus }).eq('id', id);
+
+      if (newStatus === 'Đang Khám') {
+        await supabaseClient.from('notifications').insert([{
+          patient_phone: phone,
+          appointment_id: id,
+          title: `🏥 Mời vào phòng khám (Ca ${slot})`,
+          message: `Bác sĩ đã sẵn sàng. Mời bệnh nhân (SĐT ${phone}) vào phòng khám!`,
+          notify_time: new Date().toISOString()
+        }]);
+      }
+      await refreshAllData();
+    }
+
+    function renderAdminDoctors() {
+      const container = document.getElementById('adminDoctorList');
+      container.innerHTML = doctors.map(doc => {
+        const activeCount = allAppointments.filter(a => a.doctor_id === doc.id && a.status === 'Đang Khám').length;
+        const totalToday = allAppointments.filter(a => a.doctor_id === doc.id && a.status !== 'Đã Hủy').length;
+        return `
+          <div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between">
+            <div>
+              <p class="font-bold text-sm text-slate-800">${doc.full_name}</p>
+              <p class="text-xs text-slate-500">Tổng lịch hôm nay: <b>${totalToday} ca</b></p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${activeCount > 0 ? 'bg-sky-100 text-sky-800' : 'bg-emerald-100 text-emerald-700'}">
+              ${activeCount > 0 ? 'Đang Khám' : 'Sẵn Sàng'}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function refreshAllData() {
+      await loadSlotCounts();
+      await loadAdminAppointments();
+      await loadNotifications();
+    }
+
+    // Chuyển đổi qua lại giữa màn hình App và Website
+    function switchMode(mode) {
+      const mobileView = document.getElementById('mobileView');
+      const webView = document.getElementById('webView');
+      const btnMobile = document.getElementById('btnModeMobile');
+      const btnWeb = document.getElementById('btnModeWeb');
+
+      if (mode === 'mobile') {
+        mobileView.classList.remove('hidden');
+        webView.classList.add('hidden');
+        btnMobile.className = 'px-3 py-1.5 rounded-lg font-semibold bg-sky-500 text-white transition';
+        btnWeb.className = 'px-3 py-1.5 rounded-lg font-semibold bg-slate-700 text-slate-300 hover:bg-slate-600 transition';
+      } else {
+        mobileView.classList.add('hidden');
+        webView.classList.remove('hidden');
+        btnWeb.className = 'px-3 py-1.5 rounded-lg font-semibold bg-sky-500 text-white transition';
+        btnMobile.className = 'px-3 py-1.5 rounded-lg font-semibold bg-slate-700 text-slate-300 hover:bg-slate-600 transition';
+        loadAdminAppointments();
+      }
+    }
+
+    function showMobileTab(tab) {
+      document.getElementById('mobileTabBooking').classList.add('hidden');
+      document.getElementById('mobileTabHistory').classList.add('hidden');
+      document.getElementById('mobileTabNotifications').classList.add('hidden');
+
+      document.getElementById('navBooking').className = 'flex flex-col items-center text-slate-500';
+      document.getElementById('navHistory').className = 'flex flex-col items-center text-slate-500';
+      document.getElementById('navNotif').className = 'flex flex-col items-center text-slate-500';
+
+      if (tab === 'booking') {
+        document.getElementById('mobileTabBooking').classList.remove('hidden');
+        document.getElementById('navBooking').className = 'flex flex-col items-center text-sky-600 font-bold';
+        document.getElementById('mobileHeaderTitle').innerText = 'Đặt Lịch Khám Mới';
+      } else if (tab === 'history') {
+        document.getElementById('mobileTabHistory').classList.remove('hidden');
+        document.getElementById('navHistory').className = 'flex flex-col items-center text-sky-600 font-bold';
+        document.getElementById('mobileHeaderTitle').innerText = 'Lịch Hẹn & Kết Quả';
+        loadPatientHistory();
+      } else {
+        document.getElementById('mobileTabNotifications').classList.remove('hidden');
+        document.getElementById('navNotif').className = 'flex flex-col items-center text-sky-600 font-bold';
+        document.getElementById('mobileHeaderTitle').innerText = 'Thông Báo Nhắc Lịch';
+        loadNotifications();
+      }
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
