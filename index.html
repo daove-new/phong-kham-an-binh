@@ -13,7 +13,7 @@
   <!-- THANH ĐIỀU KHIỂN -->
   <div class="bg-slate-900 text-white px-4 py-2.5 flex justify-between items-center text-sm sticky top-0 z-50">
     <div class="flex items-center gap-2">
-      <span class="bg-emerald-500 text-xs font-bold px-2 py-0.5 rounded">V4 - BẢN HOÀN CHỈNH</span>
+      <span class="bg-emerald-500 text-xs font-bold px-2 py-0.5 rounded">V4.1 - ĐÃ VÁ LỖI MÀN HÌNH</span>
     </div>
     <div class="flex gap-2">
       <button onclick="switchMode('mobile')" id="btnModeMobile" class="px-3 py-1.5 rounded-lg font-semibold bg-sky-500 text-white">App Bố/Mẹ</button>
@@ -282,7 +282,7 @@
     let selectedChildId = null;
     let selectedServiceId = null;
     let selectedTimeSlot = null;
-    let bookingMode = 'book'; // 'book' (đặt lịch) hoặc 'walkin' (lấy số ngay)
+    let bookingMode = 'book'; 
     const TIME_SLOTS = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '14:00', '14:30', '15:00', '15:30'];
 
     document.getElementById('bookingDate').value = new Date().toISOString().split('T')[0];
@@ -386,7 +386,7 @@
       renderChildrenList();
     }
 
-    // CHECK-IN & SỐ THỨ TỰ (HOME)
+    // CHECK-IN & SỐ THỨ TỰ
     let todayApt = null;
     async function checkTodayAppointment() {
       const today = new Date().toISOString().split('T')[0];
@@ -415,8 +415,6 @@
 
     async function processCheckIn() {
       if (!todayApt) return;
-      
-      // Lấy max STT hiện tại để cấp số mới
       const today = new Date().toISOString().split('T')[0];
       const { data: maxQ } = await supabaseClient.from('appointments').select('queue_number').eq('appointment_date', today).order('queue_number', { ascending: false }).limit(1);
       let nextSTT = (maxQ && maxQ.length > 0 && maxQ[0].queue_number) ? maxQ[0].queue_number + 1 : 1;
@@ -425,7 +423,7 @@
       checkTodayAppointment();
     }
 
-    // ĐẶT LỊCH / VÃNG LAI
+    // ĐẶT LỊCH
     function toggleBookingMode(mode) {
       bookingMode = mode;
       document.getElementById('btnBookMode').className = mode === 'book' ? 'flex-1 py-1.5 text-sm font-bold rounded bg-white shadow-sm text-sky-700' : 'flex-1 py-1.5 text-sm font-bold rounded text-slate-500 hover:bg-slate-200';
@@ -473,7 +471,6 @@
       
       document.getElementById('btnSubmitBooking').innerText = "Đang xử lý...";
 
-      // Nếu là vãng lai (Khám Ngay) thì tự động Check-in và cấp STT luôn
       let stt = null;
       let finalStatus = 'Chờ Check-in';
       if (bookingMode === 'walkin') {
@@ -499,7 +496,7 @@
       if (!document.getElementById('webView').classList.contains('hidden')) refreshAdminData();
     }
 
-    // SỔ KHÁM BỆNH (LỊCH SỬ)
+    // LỊCH SỬ
     async function loadPatientHistory() {
       if (!currentUser) return;
       const { data } = await supabaseClient.from('appointments').select('*').eq('patient_phone', currentUser.phone).order('appointment_date', { ascending: false });
@@ -526,17 +523,33 @@
       `).join('') || '<p class="text-xs text-center">Chưa có dữ liệu.</p>';
     }
 
+    // ĐÃ SỬA LỖI Ở ĐÂY: DÙNG ĐIỀU KIỆN IF TƯỜNG MINH ĐỂ TRÁNH LỖI PHÂN BIỆT CHỮ HOA/THƯỜNG
     function showMobileTab(tab) {
-      ['Home', 'Booking', 'History'].forEach(t => { document.getElementById('mobileTab' + t).classList.add('hidden'); document.getElementById('nav' + t).classList.replace('text-sky-600', 'text-slate-400'); });
-      document.getElementById('mobileTab' + tab).classList.remove('hidden');
-      document.getElementById('nav' + tab).classList.replace('text-slate-400', 'text-sky-600');
-      if (tab === 'booking') { loadSlotCounts(); }
-      if (tab === 'history') { loadPatientHistory(); }
+      // Ẩn tất cả các tab trước
+      document.getElementById('mobileTabHome').classList.add('hidden');
+      document.getElementById('mobileTabBooking').classList.add('hidden');
+      document.getElementById('mobileTabHistory').classList.add('hidden');
+      
+      document.getElementById('navHome').classList.replace('text-sky-600', 'text-slate-400');
+      document.getElementById('navBooking').classList.replace('text-sky-600', 'text-slate-400');
+      document.getElementById('navHistory').classList.replace('text-sky-600', 'text-slate-400');
+
+      // Mở lại tab tương ứng
+      if (tab === 'home') {
+        document.getElementById('mobileTabHome').classList.remove('hidden');
+        document.getElementById('navHome').classList.replace('text-slate-400', 'text-sky-600');
+      } else if (tab === 'booking') {
+        document.getElementById('mobileTabBooking').classList.remove('hidden');
+        document.getElementById('navBooking').classList.replace('text-slate-400', 'text-sky-600');
+        loadSlotCounts();
+      } else if (tab === 'history') {
+        document.getElementById('mobileTabHistory').classList.remove('hidden');
+        document.getElementById('navHistory').classList.replace('text-slate-400', 'text-sky-600');
+        loadPatientHistory();
+      }
     }
 
-    // ==========================================
     // WEB ADMIN LOGIC
-    // ==========================================
     function switchMode(mode) {
       document.getElementById('mobileView').classList.toggle('hidden', mode !== 'mobile');
       document.getElementById('webView').classList.toggle('hidden', mode === 'mobile');
@@ -559,7 +572,6 @@
       if (!document.getElementById('adminAuthScreen').classList.contains('hidden')) return;
       const date = document.getElementById('adminFilterDate').value;
       
-      // Sắp xếp: Ưu tiên Đã Check-in, Khám Ngay, rồi sắp theo STT
       const { data } = await supabaseClient.from('appointments').select('*').eq('appointment_date', date).order('status').order('queue_number', { ascending: true });
       
       document.getElementById('adminAppointmentTable').innerHTML = (data||[]).map(apt => `
