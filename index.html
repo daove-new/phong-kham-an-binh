@@ -13,11 +13,11 @@
   <!-- THANH ĐIỀU KHIỂN -->
   <div class="bg-slate-900 text-white px-4 py-2.5 flex justify-between items-center text-sm sticky top-0 z-50">
     <div class="flex items-center gap-2">
-      <span class="bg-emerald-500 text-xs font-bold px-2 py-0.5 rounded">V3 - PHÒNG KHÁM NHI</span>
+      <span class="bg-emerald-500 text-xs font-bold px-2 py-0.5 rounded">V4 - BẢN HOÀN CHỈNH</span>
     </div>
     <div class="flex gap-2">
       <button onclick="switchMode('mobile')" id="btnModeMobile" class="px-3 py-1.5 rounded-lg font-semibold bg-sky-500 text-white">App Bố/Mẹ</button>
-      <button onclick="switchMode('web')" id="btnModeWeb" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-700 text-slate-300">Web Lễ Tân</button>
+      <button onclick="switchMode('web')" id="btnModeWeb" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-700 text-slate-300">Web Admin</button>
     </div>
   </div>
 
@@ -27,61 +27,76 @@
   <div id="mobileView" class="py-6 px-2 flex justify-center">
     <div class="w-full max-w-[410px] bg-slate-50 rounded-[36px] shadow-2xl border-[8px] border-slate-800 overflow-hidden flex flex-col min-h-[780px] relative">
       
-      <!-- ĐĂNG NHẬP (TÀI KHOẢN PHỤ HUYNH) -->
+      <!-- AUTH: ĐĂNG NHẬP PHỤ HUYNH -->
       <div id="authScreen" class="flex-1 flex flex-col justify-center px-6 py-8 bg-white z-20 absolute inset-0">
         <div class="text-center mb-8">
           <div class="w-20 h-20 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fa-solid fa-baby"></i></div>
-          <h2 class="text-2xl font-bold text-slate-800">Phòng Khám Nhi An Bình</h2>
-          <p class="text-sm text-slate-500 mt-2">Đăng nhập tài khoản Phụ huynh</p>
+          <h2 class="text-2xl font-bold text-slate-800">PK Nhi An Bình</h2>
         </div>
-        
         <div class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">SĐT của Bố/Mẹ</label>
-            <input type="tel" id="authPhone" placeholder="VD: 0901234567" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-sky-500 outline-none" />
-          </div>
-          <div id="registerNameGroup" class="hidden">
-            <label class="block text-xs font-bold text-slate-700 mb-1">Tên của Bố/Mẹ</label>
-            <input type="text" id="authName" placeholder="Nhập họ và tên..." class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-sky-500 outline-none" />
-          </div>
-          <button onclick="handleLogin()" id="btnLogin" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3.5 rounded-xl shadow-lg mt-2">
-            Tiếp Tục
-          </button>
+          <input type="tel" id="authPhone" placeholder="SĐT của Bố/Mẹ *" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-sky-500" />
+          <input type="text" id="authName" placeholder="Tên Bố/Mẹ (Nếu là lần đầu) *" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-sky-500 hidden" />
+          <button onclick="handleLogin()" id="btnLogin" class="w-full bg-sky-600 text-white font-bold py-3.5 rounded-xl shadow-lg mt-2">Đăng Nhập</button>
         </div>
       </div>
 
       <!-- MAIN APP -->
       <div id="mainAppScreen" class="hidden flex-col h-full absolute inset-0">
         <!-- Header -->
-        <div class="bg-sky-600 text-white pt-6 pb-4 px-5 flex justify-between items-center shadow-sm">
-          <div>
-            <p class="text-xs text-sky-200">Phòng Khám Nhi An Bình</p>
-            <h1 class="text-lg font-bold" id="mobileHeaderTitle">Trang Chủ</h1>
+        <div class="bg-sky-600 text-white pt-6 pb-4 px-5 shadow-sm">
+          <div class="flex justify-between items-center mb-3">
+            <h1 class="text-lg font-bold">Phòng Khám Nhi An Bình</h1>
+          </div>
+          <!-- Hotline & Zalo -->
+          <div class="flex gap-2">
+            <a href="tel:0900000000" class="flex-1 bg-white/20 text-white py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-white/30"><i class="fa-solid fa-phone"></i> Gọi Hotline</a>
+            <a href="#" target="_blank" class="flex-1 bg-white/20 text-white py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-white/30"><i class="fa-solid fa-comment-dots"></i> Chat Zalo</a>
           </div>
         </div>
 
         <div class="flex-1 overflow-y-auto pb-20 relative">
           
           <!-- TAB: TRANG CHỦ -->
-          <div id="mobileTabHome" class="p-5 space-y-6">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-user"></i></div>
-              <div>
-                <p class="text-xs text-slate-500 font-medium">Phụ huynh:</p>
-                <h2 class="text-lg font-bold text-slate-800" id="homePatientName">...</h2>
-              </div>
+          <div id="mobileTabHome" class="p-4 space-y-5">
+            <div class="flex justify-between items-center">
+              <div><p class="text-xs text-slate-500">Phụ huynh:</p><h2 class="text-base font-bold text-slate-800" id="homePatientName">...</h2></div>
             </div>
 
-            <!-- Nút Đặt Khám -->
-            <button onclick="showMobileTab('booking')" class="w-full bg-gradient-to-r from-sky-500 to-sky-600 text-white p-5 rounded-2xl shadow-md text-left flex items-center justify-between hover:opacity-90">
-              <div>
-                <h3 class="font-bold text-lg">Đặt lịch khám cho bé</h3>
-                <p class="text-xs text-sky-100 mt-1">Chọn giờ khám, không phải chờ đợi</p>
+            <!-- KHU VỰC CHECK-IN & STT (HIỂN THỊ ĐỘNG) -->
+            <div id="checkInArea" class="hidden bg-emerald-50 border border-emerald-200 p-4 rounded-2xl shadow-sm text-center">
+              <h3 class="font-bold text-emerald-800 mb-1">Bạn có lịch hẹn hôm nay!</h3>
+              <p class="text-xs text-emerald-600 mb-3" id="checkInInfo"></p>
+              <button onclick="processCheckIn()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl shadow text-lg animate-pulse">
+                📍 TÔI ĐÃ ĐẾN PHÒNG KHÁM
+              </button>
+            </div>
+
+            <!-- HIỂN THỊ STT KHI ĐÃ LẤY SỐ -->
+            <div id="queueArea" class="hidden bg-gradient-to-r from-sky-500 to-sky-600 text-white p-5 rounded-2xl shadow-lg text-center">
+              <p class="text-sm font-medium mb-1">Số thứ tự của bé</p>
+              <h1 class="text-5xl font-black mb-2" id="queueNumberDisplay">--</h1>
+              <p class="text-xs text-sky-100" id="queueStatusDisplay">Vui lòng chờ lễ tân gọi tên...</p>
+            </div>
+
+            <!-- KHÁCH VÃNG LAI: LẤY SỐ NGAY -->
+            <button onclick="showMobileTab('booking'); document.getElementById('btnWalkInMode').click();" class="w-full bg-slate-800 text-white p-4 rounded-2xl shadow-md flex items-center justify-between hover:opacity-90">
+              <div class="text-left">
+                <h3 class="font-bold text-base">Khách vãng lai</h3>
+                <p class="text-xs text-slate-300 mt-0.5">Lấy số xếp hàng khám ngay</p>
               </div>
-              <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-xl"><i class="fa-solid fa-arrow-right"></i></div>
+              <div class="text-xl"><i class="fa-solid fa-ticket"></i></div>
             </button>
 
-            <!-- Quản lý hồ sơ bé -->
+            <!-- ĐẶT LỊCH TRƯỚC -->
+            <button onclick="showMobileTab('booking'); document.getElementById('btnBookMode').click();" class="w-full bg-white border border-sky-200 text-sky-700 p-4 rounded-2xl shadow-sm flex items-center justify-between hover:bg-sky-50">
+              <div class="text-left">
+                <h3 class="font-bold text-base">Đặt lịch khám trước</h3>
+                <p class="text-xs text-sky-500 mt-0.5">Chọn giờ khám, không phải đợi lâu</p>
+              </div>
+              <div class="text-xl"><i class="fa-regular fa-calendar-check"></i></div>
+            </button>
+
+            <!-- Hồ sơ các bé -->
             <div>
               <div class="flex justify-between items-center mb-3">
                 <h3 class="font-bold text-sm text-slate-800">Các bé nhà bạn</h3>
@@ -89,16 +104,11 @@
               </div>
               <div id="homeChildrenList" class="space-y-2"></div>
               
-              <!-- Form thêm bé ẩn -->
-              <div id="addChildForm_home" class="hidden bg-slate-50 border border-slate-200 p-4 rounded-xl mt-3 space-y-3 shadow-inner">
-                <h4 class="font-bold text-sm text-slate-700">Nhập thông tin bé:</h4>
-                <input type="text" id="newChildName_home" placeholder="Họ và tên bé *" class="w-full border rounded-lg px-3 py-2 text-sm" />
+              <div id="addChildForm_home" class="hidden bg-slate-50 border border-slate-200 p-4 rounded-xl mt-3 space-y-3">
+                <input type="text" id="newChildName_home" placeholder="Tên bé *" class="w-full border rounded-lg px-3 py-2 text-sm" />
                 <div class="flex gap-2">
-                  <input type="date" id="newChildDob_home" class="w-1/2 border rounded-lg px-3 py-2 text-sm" title="Ngày sinh" />
-                  <select id="newChildGender_home" class="w-1/2 border rounded-lg px-3 py-2 text-sm">
-                    <option value="Nam">Nam</option>
-                    <option value="Nữ">Nữ</option>
-                  </select>
+                  <input type="date" id="newChildDob_home" class="w-1/2 border rounded-lg px-3 py-2 text-sm" />
+                  <select id="newChildGender_home" class="w-1/2 border rounded-lg px-3 py-2 text-sm"><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select>
                 </div>
                 <input type="number" id="newChildWeight_home" placeholder="Cân nặng (kg)" class="w-full border rounded-lg px-3 py-2 text-sm" />
                 <button onclick="submitNewChild('home')" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-lg text-sm">Lưu hồ sơ bé</button>
@@ -106,102 +116,102 @@
             </div>
           </div>
 
-          <!-- TAB: ĐẶT LỊCH -->
-          <div id="mobileTabBooking" class="hidden p-4 space-y-5">
+          <!-- TAB: ĐẶT LỊCH / LẤY SỐ -->
+          <div id="mobileTabBooking" class="hidden p-4 space-y-4">
             
-            <!-- MỤC 1: CHỌN HỒ SƠ BÉ (Thay thế chọn Bác sĩ) -->
+            <div class="flex gap-2 mb-2 bg-slate-100 p-1 rounded-lg">
+              <button id="btnBookMode" onclick="toggleBookingMode('book')" class="flex-1 py-1.5 text-sm font-bold rounded bg-white shadow-sm text-sky-700">Đặt Giờ</button>
+              <button id="btnWalkInMode" onclick="toggleBookingMode('walkin')" class="flex-1 py-1.5 text-sm font-bold rounded text-slate-500">Lấy Số Ngay</button>
+            </div>
+
+            <!-- CHỌN BÉ -->
             <div class="bg-white p-4 rounded-xl border shadow-sm">
               <label class="block text-sm font-bold text-slate-700 mb-2">1. Khám cho bé nào?</label>
               <div id="bookingChildrenList" class="grid grid-cols-2 gap-2"></div>
-              <button onclick="toggleAddChildForm('booking')" class="w-full mt-3 border border-dashed border-sky-300 text-sky-600 bg-sky-50 py-2 rounded-lg text-xs font-bold">
-                + Nhập hồ sơ bé mới
-              </button>
-              
-              <!-- Form thêm bé ẩn trong Đặt lịch -->
-              <div id="addChildForm_booking" class="hidden bg-slate-50 border border-slate-200 p-3 rounded-lg mt-3 space-y-2">
-                <input type="text" id="newChildName_booking" placeholder="Tên bé *" class="w-full border rounded-lg px-3 py-2 text-sm" />
-                <div class="flex gap-2">
-                  <input type="date" id="newChildDob_booking" class="w-1/2 border rounded-lg px-3 py-2 text-sm" />
-                  <select id="newChildGender_booking" class="w-1/2 border rounded-lg px-3 py-2 text-sm"><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select>
-                </div>
-                <input type="number" id="newChildWeight_booking" placeholder="Cân nặng (kg)" class="w-full border rounded-lg px-3 py-2 text-sm" />
-                <button onclick="submitNewChild('booking')" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-lg text-sm">Lưu hồ sơ bé</button>
-              </div>
             </div>
 
-            <!-- MỤC 2 & 3: CHỌN DỊCH VỤ VÀ GIỜ -->
+            <!-- CHỌN DỊCH VỤ -->
             <div class="bg-white p-4 rounded-xl border shadow-sm">
               <label class="block text-sm font-bold text-slate-700 mb-2">2. Chọn Dịch Vụ</label>
-              <div id="serviceListMobile" class="space-y-2 mb-4"></div>
+              <div id="serviceListMobile" class="space-y-2"></div>
+            </div>
 
-              <label class="block text-sm font-bold text-slate-700 mb-2">3. Chọn Ngày & Giờ (Tối đa 5 bé/ca)</label>
+            <!-- CHỌN GIỜ (Ẩn nếu là Lấy Số Ngay) -->
+            <div id="timeSelectionArea" class="bg-white p-4 rounded-xl border shadow-sm">
+              <label class="block text-sm font-bold text-slate-700 mb-2">3. Chọn Ngày & Giờ</label>
               <input type="date" id="bookingDate" onchange="loadSlotCounts()" class="w-full border rounded-lg px-3 py-2 text-sm mb-3" />
               <div id="timeSlotsContainer" class="grid grid-cols-3 gap-2"></div>
             </div>
 
-            <!-- MỤC 4: LÝ DO -->
             <div class="bg-white p-4 rounded-xl border shadow-sm">
-              <label class="block text-sm font-bold text-slate-700 mb-2">4. Biểu hiện của bé</label>
-              <textarea id="patientSymptoms" rows="2" placeholder="VD: Bé ho nhiều về đêm, sốt 38 độ..." class="w-full border rounded-lg px-3 py-2 text-sm"></textarea>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Triệu chứng của bé</label>
+              <textarea id="patientSymptoms" rows="2" placeholder="VD: Ho nhiều, sốt..." class="w-full border rounded-lg px-3 py-2 text-sm"></textarea>
             </div>
 
             <button onclick="submitBooking()" id="btnSubmitBooking" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg mt-4 text-lg">
-              Xác Nhận Đặt Lịch
+              XÁC NHẬN
             </button>
           </div>
 
-          <!-- TAB: LỊCH SỬ -->
+          <!-- TAB: SỔ KHÁM BỆNH -->
           <div id="mobileTabHistory" class="hidden p-4">
              <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-sm text-slate-800">Lịch sử khám của các con:</h3>
-                <button onclick="logout()" class="text-xs font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg">Đăng Xuất</button>
+                <h3 class="font-bold text-sm text-slate-800">Sổ Khám Bệnh Điện Tử</h3>
+                <button onclick="logout()" class="text-xs font-bold text-red-500 bg-red-50 px-3 py-1 rounded-lg">Đăng Xuất</button>
              </div>
              <div id="patientHistoryList" class="space-y-3"></div>
           </div>
         </div>
 
         <!-- Thanh Điều Hướng Đáy -->
-        <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2 px-4 flex justify-between text-xs font-medium text-slate-400">
-          <button onclick="showMobileTab('home')" id="navHome" class="flex-1 flex flex-col items-center text-sky-600 font-bold">
-            <i class="fa-solid fa-house text-lg mb-1"></i> Trang Chủ
-          </button>
-          <button onclick="showMobileTab('booking')" id="navBooking" class="flex-1 flex flex-col items-center hover:text-sky-600">
-            <i class="fa-solid fa-calendar-plus text-lg mb-1"></i> Đặt Lịch
-          </button>
-          <button onclick="showMobileTab('history')" id="navHistory" class="flex-1 flex flex-col items-center hover:text-sky-600">
-            <i class="fa-solid fa-file-medical text-lg mb-1"></i> Lịch Sử
-          </button>
+        <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2 px-4 flex justify-between text-[11px] font-medium text-slate-400">
+          <button onclick="showMobileTab('home')" id="navHome" class="flex-1 flex flex-col items-center text-sky-600 font-bold"><i class="fa-solid fa-house text-lg mb-1"></i> Trang Chủ</button>
+          <button onclick="showMobileTab('booking')" id="navBooking" class="flex-1 flex flex-col items-center"><i class="fa-solid fa-calendar-plus text-lg mb-1"></i> Đặt Khám</button>
+          <button onclick="showMobileTab('history')" id="navHistory" class="flex-1 flex flex-col items-center"><i class="fa-solid fa-book-medical text-lg mb-1"></i> Sổ Khám Bệnh</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ========================================================= -->
-  <!-- PHẦN 2: WEBSITE LỄ TÂN / BÁC SĨ                           -->
+  <!-- PHẦN 2: WEBSITE LỄ TÂN & BÁC SĨ                           -->
   <!-- ========================================================= -->
-  <div id="webView" class="hidden min-h-screen flex flex-col">
-    <header class="bg-sky-600 text-white px-6 py-3.5 flex justify-between items-center shadow">
-      <div>
-        <h1 class="font-bold text-lg">Hệ Thống Quản Lý Phòng Khám Nhi An Bình</h1>
+  <div id="webView" class="hidden min-h-screen flex-col bg-slate-100 relative">
+    
+    <!-- AUTH: ĐĂNG NHẬP ADMIN -->
+    <div id="adminAuthScreen" class="absolute inset-0 bg-slate-900/50 flex items-center justify-center z-50">
+      <div class="bg-white p-8 rounded-2xl shadow-xl w-96 text-center">
+        <div class="text-sky-600 text-4xl mb-4"><i class="fa-solid fa-user-doctor"></i></div>
+        <h2 class="text-xl font-bold mb-6">Đăng Nhập Quản Trị</h2>
+        <input type="text" id="adminUsername" placeholder="Tên đăng nhập" value="admin" class="w-full border rounded-lg px-4 py-2.5 mb-3 text-sm" />
+        <input type="password" id="adminPassword" placeholder="Mật khẩu" value="123456" class="w-full border rounded-lg px-4 py-2.5 mb-4 text-sm" />
+        <button onclick="adminLogin()" class="w-full bg-sky-600 text-white font-bold py-2.5 rounded-lg">Đăng Nhập</button>
       </div>
-      <button onclick="refreshAdminData()" class="bg-sky-700 px-3 py-1.5 rounded-lg text-xs font-semibold">
-        <i class="fa-solid fa-rotate mr-1"></i> Làm mới dữ liệu
-      </button>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <header class="bg-sky-600 text-white px-6 py-3 flex justify-between items-center shadow-md">
+      <h1 class="font-bold text-lg">Quản Lý Phòng Khám Nhi An Bình</h1>
+      <div class="flex gap-3">
+        <button onclick="openSettingsModal()" class="bg-sky-700 px-3 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-gear"></i> Cài đặt</button>
+        <button onclick="refreshAdminData()" class="bg-sky-700 px-3 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-rotate"></i> Làm mới</button>
+      </div>
     </header>
-    <div class="p-6">
+
+    <div class="flex-1 p-6 max-w-7xl w-full mx-auto">
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-bold text-slate-800">Danh Sách Bệnh Nhi Khám Hôm Nay</h2>
+          <h2 class="text-lg font-bold text-slate-800">Danh Sách Xếp Hàng Khám Bệnh</h2>
           <input type="date" id="adminFilterDate" onchange="refreshAdminData()" class="border rounded-lg px-3 py-1.5 text-sm" />
         </div>
+        
         <table class="w-full text-left text-sm border-collapse">
           <thead>
             <tr class="bg-slate-50 text-slate-600 border-b">
-              <th class="py-3 px-3">Giờ Khám</th>
-              <th class="py-3 px-3">Tên Bệnh Nhi</th>
-              <th class="py-3 px-3">SĐT Phụ Huynh</th>
-              <th class="py-3 px-3">Tuổi / Cân nặng</th>
-              <th class="py-3 px-3">Biểu Hiện</th>
+              <th class="py-3 px-3 w-16">STT</th>
+              <th class="py-3 px-3">Giờ/Loại</th>
+              <th class="py-3 px-3">Bệnh Nhi</th>
+              <th class="py-3 px-3">SĐT LH</th>
               <th class="py-3 px-3">Trạng Thái</th>
               <th class="py-3 px-3 text-right">Thao Tác</th>
             </tr>
@@ -210,10 +220,54 @@
         </table>
       </div>
     </div>
+
+    <!-- MODAL KHÁM XONG (Kê đơn, chẩn đoán, thanh toán) -->
+    <div id="medicalModal" class="hidden absolute inset-0 bg-slate-900/50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-2xl shadow-xl w-[500px]">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold text-sky-700">Hoàn Tất Ca Khám</h2>
+          <button onclick="document.getElementById('medicalModal').classList.add('hidden')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <input type="hidden" id="modalAptId" />
+        
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Chẩn đoán bệnh:</label>
+            <textarea id="modalDiagnosis" rows="2" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="VD: Viêm họng cấp"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Đơn thuốc & Dặn dò:</label>
+            <textarea id="modalPrescription" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="VD: 1. Oresol uống bù nước..."></textarea>
+          </div>
+          <div class="flex items-center gap-2 pt-2 border-t">
+            <input type="checkbox" id="modalIsPaid" class="w-5 h-5 accent-emerald-500" />
+            <label for="modalIsPaid" class="text-sm font-bold text-slate-800">Đã thanh toán đủ tiền</label>
+          </div>
+          <button onclick="saveMedicalRecord()" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-lg mt-2">Lưu Sổ Khám & Hoàn Tất</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL SETTINGS (Lịch nghỉ) -->
+    <div id="settingsModal" class="hidden absolute inset-0 bg-slate-900/50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-2xl shadow-xl w-[400px]">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold">Cài Đặt Ngày Nghỉ</h2>
+          <button onclick="document.getElementById('settingsModal').classList.add('hidden')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div class="flex gap-2 mb-4">
+          <input type="date" id="blockDate" class="border rounded-lg px-3 py-2 text-sm flex-1" />
+          <button onclick="addBlockDate()" class="bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-bold">Lưu Ngày Nghỉ</button>
+        </div>
+        <div class="text-xs text-slate-500 mb-2">Danh sách ngày đang khóa:</div>
+        <ul id="blockList" class="space-y-1 text-sm text-red-600 max-h-40 overflow-y-auto"></ul>
+      </div>
+    </div>
+
   </div>
 
   <!-- ========================================================= -->
-  <!-- LOGIC HỆ THỐNG                                            -->
+  <!-- LOGIC JAVASCRIPT & SUPABASE                               -->
   <!-- ========================================================= -->
   <script>
     const SUPABASE_URL = 'https://qrwlomyhgkflpolucpuu.supabase.co';
@@ -223,35 +277,27 @@
     let currentUser = null; 
     let childrenList = [];
     let services = [];
-    let defaultDoctorId = null; // Bác sĩ duy nhất
+    let blockedDates = [];
     
     let selectedChildId = null;
     let selectedServiceId = null;
     let selectedTimeSlot = null;
+    let bookingMode = 'book'; // 'book' (đặt lịch) hoặc 'walkin' (lấy số ngay)
     const TIME_SLOTS = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '14:00', '14:30', '15:00', '15:30'];
 
     document.getElementById('bookingDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('adminFilterDate').value = new Date().toISOString().split('T')[0];
 
     async function initApp() {
-      await loadInitialData();
-      checkLoginStatus(); 
-      refreshAdminData();
-    }
-
-    async function loadInitialData() {
-      // Tự động lấy bác sĩ đầu tiên làm bác sĩ mặc định của phòng khám
-      const { data: docData } = await supabaseClient.from('users').select('*').eq('role', 'doctor').limit(1);
-      if (docData && docData.length > 0) defaultDoctorId = docData[0].id;
-
       const { data: srvData } = await supabaseClient.from('services').select('*').order('id');
       services = srvData || [];
       if (services.length > 0) selectedServiceId = services[0].id;
-      
-      renderServicesMobile();
+
+      await loadBlockedDates();
+      checkLoginStatus(); 
     }
 
-    // ĐĂNG NHẬP (TÀI KHOẢN PHỤ HUYNH)
+    // AUTH PHỤ HUYNH
     function checkLoginStatus() {
       const savedUser = localStorage.getItem('anbinh_parent');
       if (savedUser) {
@@ -261,7 +307,8 @@
         document.getElementById('mainAppScreen').classList.add('flex');
         document.getElementById('homePatientName').innerText = currentUser.full_name;
         
-        loadChildrenProfiles(); // Tải danh sách các con
+        loadChildrenProfiles(); 
+        checkTodayAppointment(); 
         showMobileTab('home');
       } else {
         document.getElementById('authScreen').classList.remove('hidden');
@@ -273,9 +320,9 @@
     async function handleLogin() {
       const phone = document.getElementById('authPhone').value.trim();
       const name = document.getElementById('authName').value.trim();
-      const btn = document.getElementById('btnLogin');
       if (!phone) return alert("Vui lòng nhập số điện thoại!");
 
+      const btn = document.getElementById('btnLogin');
       btn.innerText = "Đang kiểm tra...";
       const { data } = await supabaseClient.from('users').select('*').eq('phone', phone).eq('role', 'patient').single();
       
@@ -284,28 +331,20 @@
         checkLoginStatus();
       } else {
         if (!name) {
-          document.getElementById('registerNameGroup').classList.remove('hidden');
+          document.getElementById('authName').classList.remove('hidden');
           btn.innerText = "Tạo Hồ Sơ Phụ Huynh";
         } else {
-          btn.innerText = "Đang tạo...";
-          const { data: newUser } = await supabaseClient.from('users').insert([{
-            full_name: name, phone: phone, role: 'patient'
-          }]).select().single();
-          
+          const { data: newUser } = await supabaseClient.from('users').insert([{full_name: name, phone: phone, role: 'patient'}]).select().single();
           localStorage.setItem('anbinh_parent', JSON.stringify(newUser));
           checkLoginStatus();
         }
       }
-      btn.innerText = "Tiếp Tục";
+      btn.innerText = "Đăng Nhập";
     }
 
-    function logout() {
-      localStorage.removeItem('anbinh_parent');
-      currentUser = null;
-      checkLoginStatus();
-    }
+    function logout() { localStorage.removeItem('anbinh_parent'); currentUser = null; checkLoginStatus(); }
 
-    // QUẢN LÝ HỒ SƠ CÁC BÉ
+    // HỒ SƠ CÁC BÉ
     async function loadChildrenProfiles() {
       if (!currentUser) return;
       const { data } = await supabaseClient.from('child_profiles').select('*').eq('parent_id', currentUser.id);
@@ -316,241 +355,279 @@
     }
 
     function renderChildrenList() {
-      // Vẽ trên Trang Chủ
-      const homeHTML = childrenList.map(child => `
+      document.getElementById('homeChildrenList').innerHTML = childrenList.map(child => `
         <div class="bg-white border rounded-xl p-3 flex justify-between items-center shadow-sm">
-          <div>
-            <p class="font-bold text-sm text-sky-700"><i class="fa-solid fa-child-reaching mr-1"></i> ${child.full_name}</p>
-            <p class="text-[11px] text-slate-500 mt-0.5">Sinh: ${child.dob} • Nặng: ${child.weight}kg</p>
-          </div>
+          <p class="font-bold text-sm text-sky-700"><i class="fa-solid fa-child-reaching mr-1"></i> ${child.full_name}</p>
         </div>
       `).join('');
-      document.getElementById('homeChildrenList').innerHTML = childrenList.length > 0 ? homeHTML : '<p class="text-xs text-amber-600 bg-amber-50 p-2 rounded">Bạn chưa có hồ sơ bé nào. Vui lòng thêm bé mới!</p>';
 
-      // Vẽ trên Trang Đặt Lịch (để chọn)
       document.getElementById('bookingChildrenList').innerHTML = childrenList.map(child => `
-        <div onclick="selectChild('${child.id}')" class="cursor-pointer p-3 rounded-xl border text-center transition ${child.id === selectedChildId ? 'bg-sky-50 border-sky-500 ring-2 ring-sky-500/20 font-bold' : 'bg-white border-slate-200'}">
-          <div class="w-10 h-10 mx-auto rounded-full ${child.gender === 'Nữ' ? 'bg-pink-100 text-pink-500' : 'bg-sky-100 text-sky-500'} flex items-center justify-center text-lg mb-1">
-            <i class="fa-solid ${child.gender === 'Nữ' ? 'fa-child-dress' : 'fa-child'}"></i>
-          </div>
+        <div onclick="selectedChildId='${child.id}'; renderChildrenList();" class="cursor-pointer p-3 rounded-xl border text-center ${child.id === selectedChildId ? 'bg-sky-50 border-sky-500 ring-1 ring-sky-500 font-bold' : 'bg-white border-slate-200'}">
           <p class="text-xs line-clamp-1">${child.full_name}</p>
         </div>
       `).join('');
     }
 
-    function selectChild(id) {
-      selectedChildId = id;
+    function toggleAddChildForm(loc) { document.getElementById(`addChildForm_${loc}`).classList.toggle('hidden'); }
+
+    async function submitNewChild(loc) {
+      const name = document.getElementById(`newChildName_${loc}`).value.trim();
+      const { data } = await supabaseClient.from('child_profiles').insert([{
+        parent_id: currentUser.id, full_name: name,
+        dob: document.getElementById(`newChildDob_${loc}`).value || null,
+        gender: document.getElementById(`newChildGender_${loc}`).value,
+        weight: document.getElementById(`newChildWeight_${loc}`).value || null
+      }]).select().single();
+      
+      alert("Thêm thành công!");
+      document.getElementById(`addChildForm_${loc}`).classList.add('hidden');
+      await loadChildrenProfiles();
+      selectedChildId = data.id;
       renderChildrenList();
     }
 
-    function toggleAddChildForm(location) {
-      const form = document.getElementById(`addChildForm_${location}`);
-      form.classList.toggle('hidden');
-    }
-
-    async function submitNewChild(location) {
-      const name = document.getElementById(`newChildName_${location}`).value.trim();
-      const dob = document.getElementById(`newChildDob_${location}`).value;
-      const gender = document.getElementById(`newChildGender_${location}`).value;
-      const weight = document.getElementById(`newChildWeight_${location}`).value;
-
-      if (!name) return alert("Vui lòng nhập tên bé!");
+    // CHECK-IN & SỐ THỨ TỰ (HOME)
+    let todayApt = null;
+    async function checkTodayAppointment() {
+      const today = new Date().toISOString().split('T')[0];
+      const { data } = await supabaseClient.from('appointments').select('*').eq('patient_phone', currentUser.phone).eq('appointment_date', today).in('status', ['Chờ Check-in', 'Đã Check-in']).limit(1);
       
-      const { data, error } = await supabaseClient.from('child_profiles').insert([{
-        parent_id: currentUser.id,
-        full_name: name,
-        dob: dob || null,
-        gender: gender,
-        weight: weight ? parseFloat(weight) : null
-      }]).select().single();
-
-      if (error) { alert("Lỗi: " + error.message); } 
-      else {
-        alert("Thêm hồ sơ bé thành công!");
-        document.getElementById(`addChildForm_${location}`).classList.add('hidden');
-        // Reset form
-        document.getElementById(`newChildName_${location}`).value = '';
-        document.getElementById(`newChildWeight_${location}`).value = '';
-        
-        await loadChildrenProfiles();
-        selectedChildId = data.id; // Tự động chọn bé vừa thêm
-        renderChildrenList();
+      const checkInArea = document.getElementById('checkInArea');
+      const queueArea = document.getElementById('queueArea');
+      
+      if (data && data.length > 0) {
+        todayApt = data[0];
+        if (todayApt.status === 'Chờ Check-in') {
+           checkInArea.classList.remove('hidden');
+           queueArea.classList.add('hidden');
+           document.getElementById('checkInInfo').innerText = `Bé: ${todayApt.patient_name} - Giờ khám: ${todayApt.time_slot}`;
+        } else {
+           checkInArea.classList.add('hidden');
+           queueArea.classList.remove('hidden');
+           document.getElementById('queueNumberDisplay').innerText = todayApt.queue_number || '--';
+        }
+      } else {
+        checkInArea.classList.add('hidden');
+        queueArea.classList.add('hidden');
+        todayApt = null;
       }
     }
 
-    // ĐẶT LỊCH
+    async function processCheckIn() {
+      if (!todayApt) return;
+      
+      // Lấy max STT hiện tại để cấp số mới
+      const today = new Date().toISOString().split('T')[0];
+      const { data: maxQ } = await supabaseClient.from('appointments').select('queue_number').eq('appointment_date', today).order('queue_number', { ascending: false }).limit(1);
+      let nextSTT = (maxQ && maxQ.length > 0 && maxQ[0].queue_number) ? maxQ[0].queue_number + 1 : 1;
+
+      await supabaseClient.from('appointments').update({ status: 'Đã Check-in', queue_number: nextSTT }).eq('id', todayApt.id);
+      checkTodayAppointment();
+    }
+
+    // ĐẶT LỊCH / VÃNG LAI
+    function toggleBookingMode(mode) {
+      bookingMode = mode;
+      document.getElementById('btnBookMode').className = mode === 'book' ? 'flex-1 py-1.5 text-sm font-bold rounded bg-white shadow-sm text-sky-700' : 'flex-1 py-1.5 text-sm font-bold rounded text-slate-500 hover:bg-slate-200';
+      document.getElementById('btnWalkInMode').className = mode === 'walkin' ? 'flex-1 py-1.5 text-sm font-bold rounded bg-white shadow-sm text-sky-700' : 'flex-1 py-1.5 text-sm font-bold rounded text-slate-500 hover:bg-slate-200';
+      
+      document.getElementById('timeSelectionArea').style.display = mode === 'book' ? 'block' : 'none';
+      renderServicesMobile();
+    }
+
     function renderServicesMobile() {
       document.getElementById('serviceListMobile').innerHTML = services.map(srv => `
-        <div onclick="selectService(${srv.id})" class="cursor-pointer px-4 py-3 rounded-xl border ${srv.id === selectedServiceId ? 'bg-sky-50 border-sky-500 font-bold text-sky-900' : 'bg-slate-50 border-slate-200'} flex justify-between items-center transition">
+        <div onclick="selectedServiceId=${srv.id}; renderServicesMobile();" class="cursor-pointer px-4 py-2.5 rounded-xl border ${srv.id === selectedServiceId ? 'bg-sky-50 border-sky-500 font-bold text-sky-900' : 'bg-slate-50'} flex justify-between">
           <span class="text-sm">${srv.name}</span>
-          <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg">${Number(srv.price).toLocaleString('vi-VN')}đ</span>
         </div>
       `).join('');
     }
 
-    function selectService(id) { selectedServiceId = id; renderServicesMobile(); }
-
     async function loadSlotCounts() {
       const date = document.getElementById('bookingDate').value;
-      if (!defaultDoctorId || !date) return;
-      const { data } = await supabaseClient.from('appointments').select('time_slot').eq('doctor_id', defaultDoctorId).eq('appointment_date', date).neq('status', 'Đã Hủy');
-      
+      if (blockedDates.includes(date)) {
+        document.getElementById('timeSlotsContainer').innerHTML = '<p class="text-xs text-red-500 col-span-3">Phòng khám nghỉ ngày này.</p>';
+        return;
+      }
+
+      const { data } = await supabaseClient.from('appointments').select('time_slot').eq('appointment_date', date).neq('status', 'Đã Hủy');
       const counts = {};
       (data || []).forEach(row => counts[row.time_slot] = (counts[row.time_slot] || 0) + 1);
 
       document.getElementById('timeSlotsContainer').innerHTML = TIME_SLOTS.map(slot => {
-        const current = counts[slot] || 0;
-        const isFull = current >= 5; // Tối đa 5 bé/ca
+        const isFull = counts[slot] >= 5;
         const isSelected = selectedTimeSlot === slot && !isFull;
-        let btnClass = isFull ? 'bg-slate-200 text-slate-400 opacity-50' : isSelected ? 'bg-emerald-600 text-white font-bold' : 'bg-white border-slate-300';
-        
-        return `<button ${isFull ? 'disabled' : ''} onclick="selectTimeSlot('${slot}')" class="border rounded-xl py-2 flex flex-col items-center transition ${btnClass}">
-          <span class="text-sm">${slot}</span>
-          <span class="text-[10px]">${isFull ? 'Đầy (5/5)' : `${current}/5`}</span>
-        </button>`;
+        let btnClass = isFull ? 'bg-slate-200 text-slate-400' : isSelected ? 'bg-emerald-600 text-white' : 'bg-white border-slate-300';
+        return `<button ${isFull ? 'disabled' : ''} onclick="selectedTimeSlot='${slot}'; loadSlotCounts();" class="border rounded-xl py-2 flex flex-col items-center ${btnClass}"><span class="text-sm">${slot}</span><span class="text-[10px]">${isFull?'Đầy':`${counts[slot]||0}/5`}</span></button>`;
       }).join('');
     }
 
-    function selectTimeSlot(slot) { selectedTimeSlot = slot; loadSlotCounts(); }
-
     async function submitBooking() {
-      if (!selectedChildId) return alert('Vui lòng tạo và chọn hồ sơ bé muốn khám!');
-      if (!selectedTimeSlot) return alert('Vui lòng chọn Giờ khám!');
-      const date = document.getElementById('bookingDate').value;
-      const symptoms = document.getElementById('patientSymptoms').value;
-
+      if (!selectedChildId) return alert('Vui lòng chọn bé!');
+      
+      const child = childrenList.find(c => c.id === selectedChildId);
+      const date = bookingMode === 'book' ? document.getElementById('bookingDate').value : new Date().toISOString().split('T')[0];
+      const slot = bookingMode === 'book' ? selectedTimeSlot : 'Khám Ngay';
+      
+      if (bookingMode === 'book' && !slot) return alert('Vui lòng chọn Giờ khám!');
+      
       document.getElementById('btnSubmitBooking').innerText = "Đang xử lý...";
 
-      const selectedChild = childrenList.find(c => c.id === selectedChildId);
+      // Nếu là vãng lai (Khám Ngay) thì tự động Check-in và cấp STT luôn
+      let stt = null;
+      let finalStatus = 'Chờ Check-in';
+      if (bookingMode === 'walkin') {
+         const { data: maxQ } = await supabaseClient.from('appointments').select('queue_number').eq('appointment_date', date).order('queue_number', { ascending: false }).limit(1);
+         stt = (maxQ && maxQ.length > 0 && maxQ[0].queue_number) ? maxQ[0].queue_number + 1 : 1;
+         finalStatus = 'Đã Check-in';
+      }
 
-      const { error } = await supabaseClient.from('appointments').insert([{
-        patient_name: selectedChild.full_name, // Tên người khám là tên Bé
-        patient_phone: currentUser.phone,      // SĐT liên lạc là của Bố/mẹ
-        child_id: selectedChild.id,            // Lưu liên kết tới hồ sơ chi tiết của bé
-        doctor_id: defaultDoctorId,            // Tự động gán bác sĩ duy nhất
-        service_id: selectedServiceId,
-        appointment_date: date,
-        time_slot: selectedTimeSlot,
-        symptoms: symptoms
+      await supabaseClient.from('appointments').insert([{
+        patient_name: child.full_name, patient_phone: currentUser.phone, child_id: child.id,
+        service_id: selectedServiceId, appointment_date: date, time_slot: slot, 
+        symptoms: document.getElementById('patientSymptoms').value,
+        queue_number: stt, status: finalStatus
       }]);
 
-      if (error) { alert("Lỗi: " + error.message); } 
-      else {
-        alert('🎉 Đặt lịch cho bé thành công!');
-        document.getElementById('patientSymptoms').value = '';
-        selectedTimeSlot = null;
-        showMobileTab('history');
-        refreshAdminData();
-      }
-      document.getElementById('btnSubmitBooking').innerText = "Xác Nhận Đặt Lịch";
+      alert(bookingMode === 'walkin' ? `Lấy số thành công! STT của bạn là ${stt}` : 'Đặt lịch thành công!');
+      document.getElementById('patientSymptoms').value = '';
+      selectedTimeSlot = null;
+      document.getElementById('btnSubmitBooking').innerText = "XÁC NHẬN";
+      
+      checkTodayAppointment();
+      showMobileTab('home');
+      if (!document.getElementById('webView').classList.contains('hidden')) refreshAdminData();
     }
 
-    // LỊCH SỬ KHÁM
+    // SỔ KHÁM BỆNH (LỊCH SỬ)
     async function loadPatientHistory() {
       if (!currentUser) return;
       const { data } = await supabaseClient.from('appointments').select('*').eq('patient_phone', currentUser.phone).order('appointment_date', { ascending: false });
       
-      if (!data || data.length === 0) {
-        document.getElementById('patientHistoryList').innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Chưa có lịch sử khám.</p>`;
-        return;
-      }
-
-      document.getElementById('patientHistoryList').innerHTML = data.map(apt => {
-        const srv = services.find(s => s.id === apt.service_id);
-        const badgeColor = apt.status === 'Đã Xong' ? 'text-emerald-600 bg-emerald-50' : (apt.status === 'Đã Hủy' ? 'text-red-600 bg-red-50' : 'text-amber-600 bg-amber-50');
-        return `
-          <div class="p-3.5 rounded-xl border bg-white shadow-sm space-y-1">
-            <div class="flex justify-between items-center mb-2">
-              <span class="font-bold text-sm text-sky-700">${apt.time_slot} - ${apt.appointment_date}</span>
-              <span class="text-[10px] font-bold px-2 py-1 rounded-md ${badgeColor}">${apt.status}</span>
-            </div>
-            <p class="text-xs text-slate-700"><b>Bé khám:</b> <span class="font-semibold">${apt.patient_name}</span></p>
-            <p class="text-xs text-slate-700"><b>Dịch vụ:</b> ${srv ? srv.name : ''}</p>
+      document.getElementById('patientHistoryList').innerHTML = (data||[]).map(apt => `
+        <div class="p-4 rounded-xl border bg-white shadow-sm space-y-2">
+          <div class="flex justify-between items-center border-b pb-2">
+            <span class="font-bold text-sm text-sky-700">${apt.appointment_date}</span>
+            <span class="text-[10px] font-bold px-2 py-1 rounded-md ${apt.status==='Đã Xong'?'bg-emerald-100 text-emerald-700':'bg-slate-100'}">${apt.status}</span>
           </div>
-        `;
-      }).join('');
+          <p class="text-xs"><b>Bé khám:</b> ${apt.patient_name}</p>
+          ${apt.status === 'Đã Xong' ? `
+            <div class="bg-sky-50 p-2 rounded text-xs text-sky-900 border border-sky-100">
+              <p><b>Chẩn đoán:</b> ${apt.diagnosis || '-'}</p>
+              <p class="mt-1"><b>Đơn thuốc:</b> ${apt.prescription || '-'}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${apt.is_paid ? 'border-emerald-500 text-emerald-600' : 'border-red-500 text-red-600'}">
+                ${apt.is_paid ? '✓ Đã Thanh Toán' : '⚠ Chờ Thanh Toán'}
+              </span>
+            </div>
+          ` : ''}
+        </div>
+      `).join('') || '<p class="text-xs text-center">Chưa có dữ liệu.</p>';
     }
 
-    // ĐIỀU HƯỚNG APP
     function showMobileTab(tab) {
-      ['Home', 'Booking', 'History'].forEach(t => {
-        document.getElementById('mobileTab' + t).classList.add('hidden');
-        document.getElementById('nav' + t).className = 'flex-1 flex flex-col items-center text-slate-400 hover:text-sky-600';
-      });
-
-      if (tab === 'home') {
-        document.getElementById('mobileTabHome').classList.remove('hidden');
-        document.getElementById('navHome').className = 'flex-1 flex flex-col items-center text-sky-600 font-bold';
-        document.getElementById('mobileHeaderTitle').innerText = 'Trang Chủ';
-      } else if (tab === 'booking') {
-        document.getElementById('mobileTabBooking').classList.remove('hidden');
-        document.getElementById('navBooking').className = 'flex-1 flex flex-col items-center text-sky-600 font-bold';
-        document.getElementById('mobileHeaderTitle').innerText = 'Đặt Lịch Khám';
-        loadSlotCounts();
-      } else if (tab === 'history') {
-        document.getElementById('mobileTabHistory').classList.remove('hidden');
-        document.getElementById('navHistory').className = 'flex-1 flex flex-col items-center text-sky-600 font-bold';
-        document.getElementById('mobileHeaderTitle').innerText = 'Lịch Sử Khám';
-        loadPatientHistory();
-      }
+      ['Home', 'Booking', 'History'].forEach(t => { document.getElementById('mobileTab' + t).classList.add('hidden'); document.getElementById('nav' + t).classList.replace('text-sky-600', 'text-slate-400'); });
+      document.getElementById('mobileTab' + tab).classList.remove('hidden');
+      document.getElementById('nav' + tab).classList.replace('text-slate-400', 'text-sky-600');
+      if (tab === 'booking') { loadSlotCounts(); }
+      if (tab === 'history') { loadPatientHistory(); }
     }
 
+    // ==========================================
+    // WEB ADMIN LOGIC
+    // ==========================================
     function switchMode(mode) {
-      if (mode === 'mobile') {
-        document.getElementById('mobileView').classList.remove('hidden');
-        document.getElementById('webView').classList.add('hidden');
-        document.getElementById('btnModeMobile').classList.replace('bg-slate-700', 'bg-sky-500');
-        document.getElementById('btnModeWeb').classList.replace('bg-sky-500', 'bg-slate-700');
-      } else {
-        document.getElementById('mobileView').classList.add('hidden');
-        document.getElementById('webView').classList.remove('hidden');
-        document.getElementById('btnModeWeb').classList.replace('bg-slate-700', 'bg-sky-500');
-        document.getElementById('btnModeMobile').classList.replace('bg-sky-500', 'bg-slate-700');
-        refreshAdminData();
-      }
+      document.getElementById('mobileView').classList.toggle('hidden', mode !== 'mobile');
+      document.getElementById('webView').classList.toggle('hidden', mode === 'mobile');
+      document.getElementById('btnModeMobile').className = mode === 'mobile' ? 'px-3 py-1.5 rounded-lg font-semibold bg-sky-500 text-white' : 'px-3 py-1.5 rounded-lg font-semibold bg-slate-700 text-slate-300';
+      document.getElementById('btnModeWeb').className = mode === 'web' ? 'px-3 py-1.5 rounded-lg font-semibold bg-sky-500 text-white' : 'px-3 py-1.5 rounded-lg font-semibold bg-slate-700 text-slate-300';
+      if (mode === 'web') refreshAdminData();
     }
 
-    // CODE LỄ TÂN
+    async function adminLogin() {
+      const u = document.getElementById('adminUsername').value;
+      const p = document.getElementById('adminPassword').value;
+      const { data } = await supabaseClient.from('users').select('*').eq('phone', u).eq('passcode', p).eq('role', 'admin').single();
+      if (data) {
+        document.getElementById('adminAuthScreen').classList.add('hidden');
+        refreshAdminData();
+      } else { alert("Sai tài khoản hoặc mật khẩu!"); }
+    }
+
     async function refreshAdminData() {
+      if (!document.getElementById('adminAuthScreen').classList.contains('hidden')) return;
       const date = document.getElementById('adminFilterDate').value;
-      // Dùng cú pháp Supabase để lấy thông tin bảng phụ `child_profiles`
-      const { data } = await supabaseClient.from('appointments').select('*, child_profiles(*)').eq('appointment_date', date).order('time_slot');
       
-      document.getElementById('adminAppointmentTable').innerHTML = (data||[]).map(apt => {
-        const child = apt.child_profiles;
-        // Tính tuổi nhanh
-        let ageStr = '-';
-        if (child && child.dob) {
-            const birthYear = new Date(child.dob).getFullYear();
-            const currentYear = new Date().getFullYear();
-            ageStr = (currentYear - birthYear) + ' tuổi';
-        }
-        
-        return `
+      // Sắp xếp: Ưu tiên Đã Check-in, Khám Ngay, rồi sắp theo STT
+      const { data } = await supabaseClient.from('appointments').select('*').eq('appointment_date', date).order('status').order('queue_number', { ascending: true });
+      
+      document.getElementById('adminAppointmentTable').innerHTML = (data||[]).map(apt => `
         <tr class="hover:bg-slate-50 border-b">
-          <td class="py-3 px-3 font-bold">${apt.time_slot}</td>
           <td class="py-3 px-3">
-             <p class="font-bold text-sky-700 text-base">${apt.patient_name}</p>
+             ${apt.queue_number ? `<span class="bg-sky-600 text-white font-bold px-2.5 py-1 rounded-full text-xs">${apt.queue_number}</span>` : '-'}
           </td>
+          <td class="py-3 px-3 text-xs font-bold ${apt.time_slot==='Khám Ngay'?'text-amber-600':'text-slate-600'}">${apt.time_slot}</td>
+          <td class="py-3 px-3 font-bold text-sky-700 text-base">${apt.patient_name}</td>
           <td class="py-3 px-3 font-semibold text-slate-700">${apt.patient_phone}</td>
-          <td class="py-3 px-3 text-xs text-slate-600">
-             <p>${ageStr}</p>
-             <p class="font-bold mt-0.5">${child && child.weight ? child.weight + ' kg' : '-'}</p>
+          <td class="py-3 px-3">
+             <span class="px-2 py-1 rounded text-[11px] font-bold 
+                ${apt.status==='Đã Check-in'?'bg-emerald-100 text-emerald-700':
+                  apt.status==='Đang Khám'?'bg-sky-100 text-sky-700':
+                  apt.status==='Đã Xong'?'text-emerald-500':'bg-slate-200 text-slate-600'}">
+                ${apt.status}
+             </span>
           </td>
-          <td class="py-3 px-3 text-xs text-slate-600 w-48">${apt.symptoms || '-'}</td>
-          <td class="py-3 px-3 font-bold ${apt.status==='Đã Xong'?'text-emerald-600':(apt.status==='Đã Hủy'?'text-red-500':'text-amber-600')}">${apt.status}</td>
           <td class="py-3 px-3 text-right">
-            <button onclick="updateApt('${apt.id}', 'Đã Xong')" class="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1.5 rounded font-bold hover:bg-emerald-200">Xong</button>
-            <button onclick="updateApt('${apt.id}', 'Đã Hủy')" class="text-xs bg-red-100 text-red-700 px-2.5 py-1.5 rounded font-bold ml-1 hover:bg-red-200">Hủy</button>
+            ${apt.status === 'Đã Check-in' ? `<button onclick="updateAptStatus('${apt.id}', 'Đang Khám')" class="text-xs bg-sky-500 text-white px-2 py-1.5 rounded font-bold mr-1">Gọi Khám</button>` : ''}
+            ${apt.status === 'Đang Khám' ? `<button onclick="openMedicalModal('${apt.id}')" class="text-xs bg-emerald-500 text-white px-2 py-1.5 rounded font-bold mr-1">Hoàn Tất</button>` : ''}
           </td>
         </tr>
-      `}).join('');
+      `).join('');
     }
 
-    async function updateApt(id, status) {
-      await supabaseClient.from('appointments').update({status}).eq('id', id);
+    async function updateAptStatus(id, status) {
+      await supabaseClient.from('appointments').update({ status }).eq('id', id);
       refreshAdminData();
-      if(document.getElementById('mobileTabHistory').classList.contains('hidden') === false) loadPatientHistory();
+    }
+
+    function openMedicalModal(id) {
+      document.getElementById('modalAptId').value = id;
+      document.getElementById('modalDiagnosis').value = '';
+      document.getElementById('modalPrescription').value = '';
+      document.getElementById('modalIsPaid').checked = false;
+      document.getElementById('medicalModal').classList.remove('hidden');
+    }
+
+    async function saveMedicalRecord() {
+      const id = document.getElementById('modalAptId').value;
+      await supabaseClient.from('appointments').update({
+        status: 'Đã Xong',
+        diagnosis: document.getElementById('modalDiagnosis').value,
+        prescription: document.getElementById('modalPrescription').value,
+        is_paid: document.getElementById('modalIsPaid').checked
+      }).eq('id', id);
+      
+      document.getElementById('medicalModal').classList.add('hidden');
+      refreshAdminData();
+    }
+
+    // SETTINGS / BLOCK DATES
+    async function loadBlockedDates() {
+      const { data } = await supabaseClient.from('clinic_blocks').select('*');
+      blockedDates = (data||[]).map(d => d.block_date);
+      document.getElementById('blockList').innerHTML = blockedDates.map(d => `<li>Nghỉ: ${d}</li>`).join('');
+    }
+
+    function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); }
+    
+    async function addBlockDate() {
+      const date = document.getElementById('blockDate').value;
+      if (date) {
+        await supabaseClient.from('clinic_blocks').insert([{ block_date: date }]);
+        await loadBlockedDates();
+        alert('Đã khóa ngày khám!');
+      }
     }
 
     initApp();
